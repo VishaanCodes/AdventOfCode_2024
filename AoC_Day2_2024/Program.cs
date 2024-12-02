@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AoC_Day2_2024
 {
@@ -11,58 +8,70 @@ namespace AoC_Day2_2024
     {
         static void Main(string[] args)
         {
-            string path = "Input_AoC_D2_2024.txt";
+            ReadFile("Input_AoC_D2_2024.txt");
+            Console.ReadLine();
+        }
+        static void ReadFile(string path)
+        {
             int safe = 0;
             using (StreamReader reader = new StreamReader(path))
             {
                 string line;
-                bool first = false;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    string[] strings = line.Split(' ');
-                    for (int i = 0; i < strings.Length - 1; i++)
+                    if (IsSafe(line))
                     {
-                        if (int.Parse(strings[i]) > int.Parse(strings[i + 1]))
-                        {
-                            first = true;
-                        }
-                        else
-                        {
-                            first = false;
-                            break;
-                        }
+                        safe++;
                     }
-                    for (int i = 0; i < strings.Length - 1; i++)
+                    else
                     {
-                        if (int.Parse(strings[i]) < int.Parse(strings[i + 1]))
+                        if (CanBeSafeByRemovingOne(line))
                         {
-                            first = true;
-                        }
-                        else
-                        {
-                            first = false;
-                            break;
-                        }
-                    }
-                    if (first)
-                    {
-                        for (int i = 0; i < strings.Length - 1; i++)
-                        {
-                            int current = int.Parse(strings[i].Trim());
-                            int next = int.Parse(strings[i + 1].Trim());
-                            for (int diff = -3; diff <= 3; diff++)
-                            {
-                                if (current + diff == next)
-                                {
-                                    safe++;
-                                }
-                            }
+                            safe++;
                         }
                     }
                 }
             }
-            Console.WriteLine(safe);
-            Console.ReadLine();
+            Console.WriteLine($"Safe reports: {safe}");
+        }
+        static bool IsSafe(string line)
+        {
+            int[] levels = Array.ConvertAll(line.Split(' '), int.Parse);
+            bool isIncreasing = true,
+                 isDecreasing = true;
+            for (int i = 0; i < levels.Length - 1; i++)
+            {
+                int diff = levels[i + 1] - levels[i];
+                if (Math.Abs(diff) < 1 || Math.Abs(diff) > 3)
+                {
+                    return false;
+                }
+                if (diff > 0)
+                {
+                    isDecreasing = false;
+                }
+                else if (diff < 0)
+                {
+                    isIncreasing = false;
+                }
+            }
+            return isIncreasing || isDecreasing;
+        }
+        static bool CanBeSafeByRemovingOne(string line)
+        {
+            int[] levels = Array.ConvertAll(line.Split(' '), int.Parse);
+
+            for (int i = 0; i < levels.Length; i++)
+            {
+                List<int> modifiedLevels = new List<int>(levels);
+                modifiedLevels.RemoveAt(i);
+
+                if (IsSafe(string.Join(" ", modifiedLevels)))
+                {
+                    return true; 
+                }
+            }
+            return false;
         }
     }
 }
