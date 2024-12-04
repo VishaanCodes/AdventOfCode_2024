@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -55,16 +56,38 @@ namespace AoC_Day4_2024
                     }
                 }
             }
+            int mas = 0;
+            for (int i = 0; i + 2 < maxRows; i++)
+            {
+                for (int j = 0; j + 2 < maxCols; j++)
+                {
+                    string temp = xmasArray[i, j] + xmasArray[i + 1, j + 1] + xmasArray[i + 2, j + 2];
+                    if (CheckMas(temp))
+                    {
+                        string temp2 = xmasArray[i, j + 2] + xmasArray[i + 1, j + 1] + xmasArray[i + 2, j];
+                        if (CheckMas(temp2)) mas++;
+                    }
+                }
+            }
             Console.WriteLine(xmasHori);
             Console.WriteLine(xmasVert);
             Console.WriteLine(xmasDiag);
             Console.WriteLine(xmasBackDiag);
             Console.WriteLine(xmasHori + xmasVert + xmasDiag + xmasBackDiag);
+            Console.WriteLine(mas);
             Console.ReadLine();
         }
         static bool CheckTemp(string temp)
         {
             if (temp == "XMAS" || temp == "SAMX")
+            {
+                return true;
+            }
+            return false;
+        }
+        static bool CheckMas(string temp)
+        {
+            if (temp == "MAS" || temp == "SAM")
             {
                 return true;
             }
